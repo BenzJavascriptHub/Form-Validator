@@ -21,39 +21,60 @@ function showSuccess(input) {
 }
 
 // check email is valid
-function isValidEmail(email) {
+function checkEmail(input) {
     const re = /^([A-Za-z0-9_\-\.])+\@([A-Za-z0-9_\-\.])+\.([A-Za-z]{2,4})$/;
-    return re.test(String(email));
+    if (re.test(input.value.trim())) {
+        showSuccess(input);
+    } else {
+        showError(input, "email格式錯誤")
+    }
+}
+
+// checkRequired input
+function checkRequired(inputArr) {
+    inputArr.forEach(function (input) {
+        if (input.value.trim() === "") {
+            showError(input, `${getKeyWords(input)}為必填項目`);
+        } else {
+            showSuccess(input)
+        }
+    })
+
+}
+
+// get KeyWords
+function getKeyWords(input) {
+    return input.placeholder.slice(3)
+}
+
+// checkLength
+function checkLength(input, min, max) {
+    if (input.value.length < min) {
+        showError(input, `${getKeyWords(input)}至少${min}個字元`);
+    } else if (input.value.length > max) {
+        showError(input, `${getKeyWords(input)}少於${max}個字元`);
+    } else {
+        showSuccess(input);
+    }
+}
+
+// check Passwords Match
+function checkPasswordsMatch(input1, input2) {
+    if (input1.value !== input2.value) {
+        showError(input2, "密碼不匹配")
+    }
 }
 
 // event listener
 form.addEventListener('submit', function (e) {
+
     e.preventDefault();
     // console.log(username.value);
 
-    if (username.value === "") {
-        showError(username, "用戶名為必填項目")
-    } else {
-        showSuccess(username);
-    }
-
-    if (email.value === "") {
-        showError(email, "email為必填項目")
-    } else if (!isValidEmail(email.value)) {
-        showError(email, 'email格式錯誤');
-    } else {
-        showSuccess(email);
-    }
-
-    if (password.value === "") {
-        showError(password, "密碼為必填項目")
-    } else {
-        showSuccess(password);
-    }
-
-    if (password2.value === "") {
-        showError(password2, "確認密碼為必填項目")
-    } else {
-        showSuccess(password2);
-    }
+    checkRequired([username, email, password, password2]);
+    checkLength(username, 3, 15)
+    checkEmail(email)
+    checkLength(password, 6, 12)
+    checkLength(password2, 6, 12)
+    checkPasswordsMatch(password, password2)
 })
